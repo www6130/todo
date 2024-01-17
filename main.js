@@ -1,42 +1,39 @@
-"use strict";
+const addTask = document.querySelector('.add');
+const list = document.querySelector('.tasks');
 
-const port = 3000;
-const http = require("http");
-const fs = require("fs");
+let todos = [];
 
-function readFile(file, response) {
-    fs.readFile(`./${file}`, (errors, data) => {
-        if (errors) {
-            console.log("Error reading the file...");
-        }
-        response.end(data);
-    });
+function addTodo(text) {
+    const todo = {
+        id: Date.now(),
+        text,
+      };
+      todos.push(todo)
 }
 
-const app = http.createServer((request, response) => {
-    if (request.url === "/" && request.method === "GET") {
-        response.writeHead(200, {
-            "Content-Type": "text/html"
-        });
-        readFile("view/index.html", response);
-    } else if (request.url === "/public/image/wakaba.JPG" && request.method === "GET") {
-        response.writeHead(200, {
-            "Content-Type": "image/png"
-        });
-        readFile("public/image/wakaba.JPG", response);
-    } else if (request.url === "/public/css/style.css" && request.method === "GET") {
-        response.writeHead(200, {
-            "Content-Type": "text/css"
-        });
-        readFile("public/css/style.css", response);
-    } else {
-        response.writeHead(404, {
-            "Content-Type": "text/html"
-        });
-        response.end(`Not found : ${request.url}`);
-        console.log();
+function renderTodo() {
+    let temp = '';
+    todos.forEach(todo => {
+        const html = `
+            <li key="${todo.id}">
+                <span>${todo.text}</span>
+            </li>
+            `;
+        temp += html;
+      });
+      list.innerHTML = temp;
+  }
+
+
+
+addTask.addEventListener('submit', e => {
+    e.preventDefault();
+    
+    const text = addTask.add.value.trim();
+
+    if (text !== '') {
+        addTodo(text);
+        addTask.reset();
+        renderTodo();
     }
 });
-
-app.listen(port);
-console.log(`The server has started and is listening on port number: ${port}`);
